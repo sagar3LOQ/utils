@@ -161,9 +161,9 @@ def convertFiles(in_dir,label,out_dir):
         for file in files:
             index += 1
             cvfile = os.path.join(root, file)
-            print "Processing :: " + cvfile
+            print "Processing :: " + file
             in_fname = genLabel(cvfile)
-            out_fname = ""
+           
             cvparser = CVParser(cvfile,label,out_dir)
             if cvparser.errorMsg:
                 print cvparser.errorMsg
@@ -174,8 +174,11 @@ def convertFiles(in_dir,label,out_dir):
                 md5_str = getMD5HashDigest(text)
 		
                 outFname = getOutName(md5_str,label)
-		print "preprocess"
+	
                 outPath = out_dir + "/" + outFname
+		if os.path.isfile(outPath):
+		    print "File exist ... ! Text Discarded :/" 
+		    continue 
                 fw = open(outPath, "w")
                 fw.write(text)
                 fw.close()
