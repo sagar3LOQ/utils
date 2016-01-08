@@ -12,7 +12,16 @@ import pyparsing
 # For doc, docx and odt to text conversions:
 import docx2txt
 
+import hashlib
 
+def getMD5HashDigest(text):
+    return hashlib.md5(text).hexdigest()
+
+def getOutName(md5Str,label):
+
+
+    strg = str(md5Str) + "_" + label + ".dat"
+    return strg
 
 class CVParser(object):
     # Some commonly used regex patterns:
@@ -28,9 +37,8 @@ class CVParser(object):
         if not os.path.exists(self.outDir):
             os.makedirs(self.outDir)
         self.cvTextFile = None
- #       randomStr = 1
+
         self.label = label
-#        self.userTempDir = self.outDir + os.path.sep + "tmp_" + randomStr.__str__()
 
 
     """
@@ -66,18 +74,18 @@ class CVParser(object):
             print self.errorMsg
             sys.exit(0)
         if self.cvFormat == 'pdf':
-            self._convert_pdf_to_text(index)
+            return self._convert_pdf_to_text(index)
         elif self.cvFormat == 'docx':
-            self._convert_docx_to_text(index)
+            return self._convert_docx_to_text(index)
         elif self.cvFormat == 'doc':
-            self._convert_doc_to_text(index)
+            return self._convert_doc_to_text(index)
         elif self.cvFormat == 'rtf':    
-            self._convert_rtf_to_text(index)
+            return self._convert_rtf_to_text(index)
         elif self.cvFormat == 'txt':
             print "Unrecognised format : pass decoding"
         else:
             print "Unrecognised format : pass decoding"
-        return(self.cvTextFile)
+        return(0)
 
 
     def _convert_pdf_to_text(self,index):
@@ -85,53 +93,34 @@ class CVParser(object):
         input_pdf = self.cvFile
 
 
-        outputPath = self.outDir
         inputPath = os.getcwd()
         if os.path.exists(input_pdf):
             inputPath = os.path.dirname(input_pdf)
         input_filename = os.path.basename(input_pdf)
         input_parts = input_filename.split(".")
         input_parts.pop()
-        randomStr = int(time.time())
-        output_filename = outputPath + os.path.sep + "".join(str(index)) + "_"+str(self.label)   + r".txt"
-        self.cvTextFile = output_filename
-
-        output_filename = output_filename.replace (" ", "_")
-        outfp = open(output_filename, 'w')
 
         text = textract.process(input_pdf)
  
-        outfp.write(text)
-
-        outfp.close()
-        return (0)
+        return text
 
     def _convert_rtf_to_text(self,index):
    #     print "processing rtf"
         input_pdf = self.cvFile
 
-        outputPath = self.outDir
         inputPath = os.getcwd()
         if os.path.exists(input_pdf):
             inputPath = os.path.dirname(input_pdf)
         input_filename = os.path.basename(input_pdf)
         input_parts = input_filename.split(".")
         input_parts.pop()
-        randomStr = int(time.time())
-        output_filename = outputPath + os.path.sep + "".join(str(index)) + "_"+str(self.label)   + r".txt"
-        self.cvTextFile = output_filename
 
-        outfp = open(output_filename, 'w')
         text = textract.process(input_pdf)
-        outfp.write(text)
-
-        outfp.close()
-        return (0)
+        return text
     
     def _convert_doc_to_text(self,index, password=None):
 
         input_doc = self.cvFile
-        outputPath = self.outDir
 
         inputPath = os.getcwd()
         if os.path.exists(input_doc):
@@ -139,13 +128,12 @@ class CVParser(object):
 
         input_filename = os.path.basename(input_doc)
         input_parts = input_filename.split(".")
-        print "testing"
-        output_filename = outputPath + os.path.sep + "".join(str(index)) + "_"+str(self.label)  + r".txt"        #output_filename = output_filename.replace (" ", "_")
 
-        self.cvTextFile = output_filename
-        cmd = 'catdoc "%s" > "%s"'%(self.cvFile, self.cvTextFile) # Dangerous!!! Why not use 'subprocess'?
-        os.system(cmd)
-        return(0)
+
+        cmd = 'catdoc "%s"'%(self.cvFile) # Dangerous!!! Why not use 'subprocess'?
+        text = os.popen(cmd).read()
+
+        return text
 
 
 
@@ -153,29 +141,23 @@ class CVParser(object):
 
 #        print "Decoding docx file"
         input_docx = self.cvFile
-        outputPath = self.outDir
+
         inputPath = os.getcwd()
         if os.path.exists(input_docx):
             inputPath = os.path.dirname(input_docx)
         input_filename = os.path.basename(input_docx)
         input_parts = input_filename.split(".")
         input_parts.pop()
-        randomStr = int(time.time())
-        output_filename = outputPath + os.path.sep + "".join(str(index)) + "_"+str(self.label)   + r".txt"
-
- #       print "writing output to {0}".format(output_filename)
         text = docx2txt.process(input_docx)
-        fw = open(output_filename, "w")
 
-        fw.write(text.encode('utf-8'))
-        fw.close()
-        return(0)
+        return text.encode('utf-8')
 
 
 def convertFiles(in_dir,label,out_dir):
     index = 0
     for root, dirs, files in os.walk(in_dir):
-#    for cvfile in os.listdir(in_dir):
+
+
         for file in files:
             index += 1
             cvfile = os.path.join(root, file)
@@ -187,7 +169,16 @@ def convertFiles(in_dir,label,out_dir):
                 print cvparser.errorMsg
                 sys.exit(0)
             try:
-                cvparser.preprocess(index)
+                text = cvparser.preprocess(index)
+		
+                md5_str = getMD5HashDigest(text)
+		
+                outFname = getOutName(md5_str,label)
+		print "preprocess"
+                outPath = out_dir + "/" + outFname
+                fw = open(outPath, "w")
+                fw.write(text)
+                fw.close()
             except:
                 print "Conversion Failed :("
                 sys.exit(1)
@@ -197,7 +188,6 @@ def genLabel(strg):
 	
 
 if __name__ == '__main__':
-#    cvfile = sys.argv[1]
 
     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
