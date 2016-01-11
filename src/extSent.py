@@ -23,7 +23,7 @@ def cleanse_data(text):
 	for c in wF:
         	text =text.replace(c," ")	
 
-	return text
+	return text.lower()
 
 
 def scan_file(dir_name):
