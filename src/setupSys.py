@@ -5,6 +5,7 @@ import trainWord2Vec as mWord2Vec
 import convert2text as mDoc2txt
 import os
 import random
+import math
 
 
 # Global Variable declared here
@@ -153,78 +154,84 @@ def convertRawFiles2Text():
 	mDoc2txt.convertDirFiles(raw_reject_dir, reject_dir)
 	mDoc2txt.convertDirFiles(raw_predict_dir, predict_dir)
 
-def loadTrainFiles(inDir,split):
-
-	print "Train Data"
-	split = 1-split
-	trainExList = listFIles(input_train)
-	testExList = listFIles(input_test)
-	inList1 = listFIles(inDir)
-	numIn = len(inList1)
-	print inList1
-	print "\n\n"
-	inList = list(set(inList1) - set(trainExList))
-	inList = list(set(inList) - set(testExList))
-	Numfiles = len(inList)
-	valN =int((split* (numIn+1)) - len(set(inList1) & set(trainExList)))
-	print valN, Numfiles
-	if valN<=0:
-		return
-
-	if Numfiles<valN :
-		return
-	copyFile = set(random.sample(inList,valN))
-	for f in copyFile:
-		print f
-		print "\n\n"
-		moveData(inDir +"/"+f,input_train)
-		moveData(inDir +"/"+f,input_total)
-
-	return
-
-def loadTestFiles(inDir,split):
-
-	print "Test Data"
-	trainExList = listFIles(input_train)
-	testExList = listFIles(input_test)
-	inList1 = listFIles(inDir)
-	print inList1
-	numIn = len(inList1)
-
-	inList = list(set(inList1) - set(trainExList))
-	inList = list(set(inList) - set(testExList))
-	Numfiles = len(inList)
-	valN =int((split* (numIn+2)) - len(set(inList1) & set(testExList)))
-	print valN, Numfiles
-	if valN<=0:
-		return
-	if Numfiles<valN :
-		return
-	copyFile = set(random.sample(inList,valN))
-	for f in copyFile:
-		print f
-		print "\n\n"
-		moveData(inDir +"/"+f,input_test)
-		moveData(inDir +"/"+f,input_total)
-
 
 def loadFiles2Input(split=0.33):
 
-	loadTrainFiles(accept_dir,split)
-	loadTestFiles(accept_dir,split)
+	trainExList = listFIles(input_train)
+	testExList = listFIles(input_test)
+	acceptExList = listFIles(accept_dir)
+	rejectExList = listFIles(reject_dir)
 
-	loadTrainFiles(reject_dir,split)
-	loadTestFiles(reject_dir,split)
+	numTr = len(trainExList) #= listFIles(input_train)
+	numTst = len(testExList) #= listFIles(input_test)
+	numAcpt = len(acceptExList) #= listFIles(accept_dir)
+	numRej = len(rejectExList) #= listFIles(reject_dir)
+
+	numTstAcp = int(math.ceil(split*numAcpt))
+	numTrAcp = numAcpt - numTstAcp	
+#	print numTstAcp,numTrAcp
+
+	numTstRej = int(math.ceil(split*numRej))
+	numTrRej = numRej - numTstRej	
+#	print numTstRej, numTrRej	
+
+	diffTrAcp = numTrAcp - len(set(acceptExList) & set(trainExList))
+	diffTstAcp = numTstAcp - len(set(acceptExList) & set(testExList))
+
+	diffTrRej = numTrRej - len(set(rejectExList) & set(trainExList))
+	diffTstRej = numTstRej - len(set(rejectExList) & set(testExList))
+
+	acceptExList = list(set(acceptExList) - set(trainExList))
+	acceptExList = list(set(acceptExList) - set(testExList))
+
+	rejectExList = list(set(rejectExList) - set(trainExList))
+	rejectExList = list(set(rejectExList) - set(testExList))
+
+
+	if diffTrAcp>0:		
+		TrAcpFile = set(random.sample(acceptExList,diffTrAcp))
+		acceptExList = list(set(acceptExList) - set(TrAcpFile))
+		for f in TrAcpFile:
+	#		print f
+	#		print "\n\n"
+			moveData(accept_dir +"/"+f,input_train)
+			moveData(accept_dir +"/"+f,input_total)
+
+	if diffTstAcp>0:		
+		TstAcpFile = set(random.sample(acceptExList,diffTstAcp))
+		for f in TstAcpFile:
+	#		print f
+	#		print "\n\n"
+			moveData(accept_dir +"/"+f,input_test)
+			moveData(accept_dir +"/"+f,input_total)
+
+	if diffTrRej>0:		
+		TrRejFile = set(random.sample(rejectExList,diffTrRej))
+		rejectExList = list(set(rejectExList) - set(TrRejFile))
+		for f in TrRejFile:
+	#		print f
+	#		print "\n\n"
+			moveData(reject_dir +"/"+f,input_train)
+			moveData(reject_dir +"/"+f,input_total)
+
+	if diffTstRej>0:		
+		TstRejFile = set(random.sample(rejectExList,diffTstRej))
+		for f in TstRejFile:
+	#		print f
+	#		print "\n\n"
+			moveData(reject_dir +"/"+f,input_test)
+			moveData(reject_dir +"/"+f,input_total)
 
 	predictList = listFIles(predict_dir)
-	print "Predict Data"
-	print predictList
-	print "\n\n"
+	predictExList = listFIles(input_predict)
+
+	predictList = set(predictList) - set(predictExList)
+
 	for f in predictList:
-		print f
+	#	print f
 		moveData(predict_dir +"/"+f,input_predict)
 		moveData(predict_dir +"/"+f,input_total)
-	
+
 
 def listFIles(dirname):
 	files = [f for f in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, f))]
