@@ -302,6 +302,7 @@ class genTopNVec:
 
 
 	def train_predict(self):
+
 		td = TrainData()
 
 		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.topN,self.size)
