@@ -82,10 +82,13 @@ class CVParser(object):
         elif self.cvFormat == 'rtf':    
             return self._convert_rtf_to_text(index)
         elif self.cvFormat == 'txt':
-            print "Unrecognised format : pass decoding"
+            return self._text_process()
         else:
             print "Unrecognised format : pass decoding"
         return(0)
+
+    def _text_process(self):
+        return open(self.cvFile).read()
 
 
     def _convert_pdf_to_text(self,index):
@@ -155,12 +158,19 @@ class CVParser(object):
 
 def convertFiles(in_dir,label,out_dir):
     index = 0
-    for root, dirs, files in os.walk(in_dir):
+ #   for root, dirs, files in os.walk(in_dir):
+    print in_dir
 
-
-        for file in files:
+    for file in os.listdir(in_dir):
+        
+        file = os.path.join(in_dir, file)
+        print file
+        if os.path.isfile(file):
+         
+#        for file in files:
             index += 1
-            cvfile = os.path.join(root, file)
+
+            cvfile = file
             print "Processing :: " + file
             in_fname = genLabel(cvfile)
            
@@ -190,22 +200,28 @@ def genLabel(strg):
     return strg.split("/")[-1]
 	
 
-if __name__ == '__main__':
+def convertDirFiles(dirIn,dirOut):
+    label = genLabel(dirIn)
+    print label
+    convertFiles(dirIn,label,dirOut)
 
+if __name__ == '__main__':
+    print "Started code"
     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
-    label = genLabel(accept_dir)
-    convertFiles(accept_dir,label,accept_out)
+ #   label = genLabel(accept_dir)
+    convertDirFiles(accept_dir,accept_out)
+
 
     reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
     reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
-    label = genLabel(reject_dir)
-    convertFiles(reject_dir,label,reject_out)
+  #  label = genLabel(reject_dir)
+    convertDirFiles(reject_dir,reject_out)
 
 
     predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
     predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
-    label = genLabel(predict_dir)
-    convertFiles(predict_dir,label,predict_out)
+   # label = genLabel(predict_dir)
+    convertDirFiles(predict_dir,predict_out)
 
 
