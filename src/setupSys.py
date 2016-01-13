@@ -261,16 +261,77 @@ def listFIles(dirname):
 def moveData(src,dest):
 	shutil.copy(src,dest)
 
-def clearDir(Dir):
-	for root, dirs, files in os.walk(Dir):
-		for name in files:
-			os.remove(os.path.join(root, name))
+def clearDir(in_dir):
 
-def cleanShuffle():
+	for f in os.listdir(in_dir):
+        
+		f = os.path.join(in_dir, f)
+		if os.path.isfile(f):
+			os.remove(f)
+
+	print "All files successfully deleted... "
+
+
+def cleanShuffle(split=0.20):
+
+	clearDir(input_train)
+	clearDir(input_test)
+	clearDir(input_total)
+	clearDir(input_predict)
+
+	acceptExList = listFIles(accept_dir)
+	rejectExList = listFIles(reject_dir)
+
+	numAcpt = len(acceptExList) #= listFIles(accept_dir)
+	numRej = len(rejectExList) #= listFIles(reject_dir)
+
+	numTstAcp = int(math.ceil(split*numAcpt))
+	numTrAcp = numAcpt - numTstAcp	
+
+	numTstRej = int(math.ceil(split*numRej))
+	numTrRej = numRej - numTstRej	
+
+	if numTrAcp>0:		
+
+		TrAcpFile = set(random.sample(acceptExList,numTrAcp))
+		acceptExList = list(set(acceptExList) - set(TrAcpFile))
+		for f in TrAcpFile:
+			moveData(os.path.join(accept_dir,f),input_train)
+			moveData(os.path.join(accept_dir,f),input_total)
+
+
+	if numTstAcp>0:		
+
+		TstAcpFile = set(random.sample(acceptExList,numTstAcp))
+		for f in TstAcpFile:
+			moveData(os.path.join(accept_dir,f),input_test)
+			moveData(os.path.join(accept_dir,f),input_total)
+
+
+	if numTrRej>0:		
+
+		TrRejFile = set(random.sample(rejectExList,numTrRej))
+		rejectExList = list(set(rejectExList) - set(TrRejFile))
+		for f in TrRejFile:
+			moveData(os.path.join(reject_dir,f),input_train)
+			moveData(os.path.join(reject_dir,f),input_total)
+
+
+	if numTstRej>0:		
+		TstRejFile = set(random.sample(rejectExList,numTstRej))
+		for f in TstRejFile:
+			moveData(os.path.join(reject_dir,f),input_test)
+			moveData(os.path.join(reject_dir,f),input_total)
+
+	predictList = listFIles(predict_dir)
+
+	for f in predictList:
+		moveData(os.path.join(predict_dir,f),input_predict)
+		moveData(os.path.join(predict_dir,f),input_total)
 
 	
 	return
 
 if __name__ == '__main__':
-	convertRawFiles2Text()
-	loadFiles2Input()
+#	convertRawFiles2Text()
+	cleanShuffle()
