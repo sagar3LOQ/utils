@@ -38,6 +38,24 @@ def train(model_name, is_phrased, input_data_dir, size, window, negative, sample
 	
 	return model
 	
+def genWord2Vec(model_name, is_phrased, input_data_dir, size, window, negative, sample, min_count, workers, iterations, out_model_file):
+
+	
+	data = Sentences(input_data_dir)
+
+	model = gensim.models.Word2Vec(size=size, window=window, negative=negative, sample=sample, min_count=min_count, workers=workers, iter=iterations)
+	model.build_vocab(data)
+	
+	T = model.train(data)
+
+	model.save(out_model_file)
+	print 'Model: ' + model_name + ' saved to disk in: [' + out_model_file + '.'
+
+	print 'Model trained: ' + str(model)
+	print 'Model vocab count ' + str(len(model.vocab))
+	
+	return model
+
 def print_vocab(model):
 	for each in model.vocab:
 		print each
@@ -71,6 +89,8 @@ def test_model(config):
 	model = gensim.models.Word2Vec.load(config['word2vec']['test']['model_file'])
 	test(model)
 
+def load_W2Vec(modelPath):
+	return gensim.models.Word2Vec.load(modelPath)
 
 
 def main():
