@@ -194,16 +194,24 @@ def loadFiles2Input(split=0.33):
 		for f in TrAcpFile:
 	#		print f
 	#		print "\n\n"
-			moveData(accept_dir +"/"+f,input_train)
-			moveData(accept_dir +"/"+f,input_total)
+#			moveData(accept_dir +"/"+f,input_train)
+#			moveData(accept_dir +"/"+f,input_total)
+
+			moveData(os.path.join(accept_dir,f),input_train)
+			moveData(os.path.join(accept_dir,f),input_total)
+
 
 	if diffTstAcp>0:		
 		TstAcpFile = set(random.sample(acceptExList,diffTstAcp))
 		for f in TstAcpFile:
 	#		print f
 	#		print "\n\n"
-			moveData(accept_dir +"/"+f,input_test)
-			moveData(accept_dir +"/"+f,input_total)
+#			moveData(accept_dir +"/"+f,input_test)
+#			moveData(accept_dir +"/"+f,input_total)
+
+			moveData(os.path.join(accept_dir,f),input_test)
+			moveData(os.path.join(accept_dir,f),input_total)
+
 
 	if diffTrRej>0:		
 		TrRejFile = set(random.sample(rejectExList,diffTrRej))
@@ -211,16 +219,24 @@ def loadFiles2Input(split=0.33):
 		for f in TrRejFile:
 	#		print f
 	#		print "\n\n"
-			moveData(reject_dir +"/"+f,input_train)
-			moveData(reject_dir +"/"+f,input_total)
+#			moveData(reject_dir +"/"+f,input_train)
+#			moveData(reject_dir +"/"+f,input_total)
+
+			moveData(os.path.join(reject_dir,f),input_train)
+			moveData(os.path.join(reject_dir,f),input_total)
+
 
 	if diffTstRej>0:		
 		TstRejFile = set(random.sample(rejectExList,diffTstRej))
 		for f in TstRejFile:
 	#		print f
 	#		print "\n\n"
-			moveData(reject_dir +"/"+f,input_test)
-			moveData(reject_dir +"/"+f,input_total)
+#			moveData(reject_dir +"/"+f,input_test)
+#			moveData(reject_dir +"/"+f,input_total)
+
+			moveData(os.path.join(reject_dir,f),input_test)
+			moveData(os.path.join(reject_dir,f),input_total)
+
 
 	predictList = listFIles(predict_dir)
 	predictExList = listFIles(input_predict)
@@ -229,8 +245,13 @@ def loadFiles2Input(split=0.33):
 
 	for f in predictList:
 	#	print f
-		moveData(predict_dir +"/"+f,input_predict)
-		moveData(predict_dir +"/"+f,input_total)
+#		moveData(predict_dir +"/"+f,input_predict)
+#		moveData(predict_dir +"/"+f,input_total)
+
+		moveData(os.path.join(predict_dir,f),input_predict)
+		moveData(os.path.join(predict_dir,f),input_total)
+
+
 
 
 def listFIles(dirname):
@@ -240,10 +261,14 @@ def listFIles(dirname):
 def moveData(src,dest):
 	shutil.copy(src,dest)
 
-def shuffleData(dirN,trDir,tstDir,split=30):
-	return
+def clearDir(Dir):
+	for root, dirs, files in os.walk(Dir):
+		for name in files:
+			os.remove(os.path.join(root, name))
 
 def cleanShuffle():
+
+	
 	return
 
 if __name__ == '__main__':
