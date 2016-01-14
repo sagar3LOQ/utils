@@ -203,6 +203,7 @@ def convertDirFiles(dirIn,dirOut):
     convertFiles(dirIn,label,dirOut)
 
 if __name__ == '__main__':
+
     print "Started code"
     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"

@@ -30,6 +30,8 @@ def train(model_name, is_phrased, input_data_dir, size, window, negative, sample
 	
 	T = model.train(data)
 
+	out_model_file = out_model_file +"_size"+str(size)+"_window"+ str(window)+"_negative"+ str(negative)+"_sample"+ str(sample)+"_minCount"+ str(min_count)+"_iter"+  str(iterations)+".mod"
+
 	model.save(out_model_file)
 	print 'Model: ' + model_name + ' saved to disk in: [' + out_model_file + '.'
 
@@ -47,6 +49,8 @@ def genWord2Vec(model_name, is_phrased, input_data_dir, size, window, negative, 
 	model.build_vocab(data)
 	
 	T = model.train(data)
+
+	out_model_file = out_model_file +"_size"+str(size)+"_window"+ str(window)+"_negative"+ str(negative)+"_sample"+ str(sample)+"_minCount"+ str(min_count)+"_iter"+  str(iterations)+".mod"
 
 	model.save(out_model_file)
 	print 'Model: ' + model_name + ' saved to disk in: [' + out_model_file + '.'
