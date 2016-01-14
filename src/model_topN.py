@@ -386,13 +386,13 @@ class genTopNVec:
 		input_filename.close()
 
 	# perform N-fold test
-	def NFoldTest(self, iter_N=5,split =0.30,random_state=0):
+	def NFoldTest(self,total_dirname, iter_N=5,split =0.30,random_state=0):
 
-		total_dirname = '/home/viswanath/workspace/test_resume/train'
+		
 		td = TrainData()
-		print "extracting data"
+
 		x_total, y_total, fn_total  = td.train_model( total_dirname, self.w2v_model_path,self.topN,self.size)
-		print "random split"
+
 		kf_total = cross_validation.ShuffleSplit(len(x_total), n_iter=iter_N, test_size=split,   random_state=random_state)
 		x_tot_np = Math.array(x_total)
 		y_tot_np = Math.array(y_total)
@@ -431,7 +431,7 @@ if __name__ == '__main__':
 	test_dirname = '/home/viswanath/workspace/resume_data/res_dir/test'
 	predict_dirname = '/home/viswanath/workspace/test_resume/predict'
 	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_size100_win5_neg20_sampleD1_mincount3_iter50.mod' #'/home/viswanath/workspace/test_resume/model/w2v_model_100v3.mod'
-
+	total_dirname = '/home/viswanath/workspace/test_resume/train'
 	size = 100
 	topNA = [200]  
 
@@ -441,7 +441,7 @@ if __name__ == '__main__':
 	for topN in topNA:
 		print "\nFor TopN N=" + str(topN) + "\n"
 		gt = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
-		gt.NFoldTest(iter_N=50,split =0.27)
+		gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
 	timestr = time.strftime("%Y_%m_%d_%H%M%S")
 
 
