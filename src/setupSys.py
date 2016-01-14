@@ -169,11 +169,9 @@ def loadFiles2Input(split=0.33):
 
 	numTstAcp = int(math.ceil(split*numAcpt))
 	numTrAcp = numAcpt - numTstAcp	
-#	print numTstAcp,numTrAcp
 
 	numTstRej = int(math.ceil(split*numRej))
 	numTrRej = numRej - numTstRej	
-#	print numTstRej, numTrRej	
 
 	diffTrAcp = numTrAcp - len(set(acceptExList) & set(trainExList))
 	diffTstAcp = numTstAcp - len(set(acceptExList) & set(testExList))
@@ -192,10 +190,6 @@ def loadFiles2Input(split=0.33):
 		TrAcpFile = set(random.sample(acceptExList,diffTrAcp))
 		acceptExList = list(set(acceptExList) - set(TrAcpFile))
 		for f in TrAcpFile:
-	#		print f
-	#		print "\n\n"
-#			moveData(accept_dir +"/"+f,input_train)
-#			moveData(accept_dir +"/"+f,input_total)
 
 			moveData(os.path.join(accept_dir,f),input_train)
 			moveData(os.path.join(accept_dir,f),input_total)
@@ -204,10 +198,6 @@ def loadFiles2Input(split=0.33):
 	if diffTstAcp>0:		
 		TstAcpFile = set(random.sample(acceptExList,diffTstAcp))
 		for f in TstAcpFile:
-	#		print f
-	#		print "\n\n"
-#			moveData(accept_dir +"/"+f,input_test)
-#			moveData(accept_dir +"/"+f,input_total)
 
 			moveData(os.path.join(accept_dir,f),input_test)
 			moveData(os.path.join(accept_dir,f),input_total)
@@ -217,10 +207,6 @@ def loadFiles2Input(split=0.33):
 		TrRejFile = set(random.sample(rejectExList,diffTrRej))
 		rejectExList = list(set(rejectExList) - set(TrRejFile))
 		for f in TrRejFile:
-	#		print f
-	#		print "\n\n"
-#			moveData(reject_dir +"/"+f,input_train)
-#			moveData(reject_dir +"/"+f,input_total)
 
 			moveData(os.path.join(reject_dir,f),input_train)
 			moveData(os.path.join(reject_dir,f),input_total)
@@ -229,10 +215,6 @@ def loadFiles2Input(split=0.33):
 	if diffTstRej>0:		
 		TstRejFile = set(random.sample(rejectExList,diffTstRej))
 		for f in TstRejFile:
-	#		print f
-	#		print "\n\n"
-#			moveData(reject_dir +"/"+f,input_test)
-#			moveData(reject_dir +"/"+f,input_total)
 
 			moveData(os.path.join(reject_dir,f),input_test)
 			moveData(os.path.join(reject_dir,f),input_total)
@@ -244,9 +226,6 @@ def loadFiles2Input(split=0.33):
 	predictList = set(predictList) - set(predictExList)
 
 	for f in predictList:
-	#	print f
-#		moveData(predict_dir +"/"+f,input_predict)
-#		moveData(predict_dir +"/"+f,input_total)
 
 		moveData(os.path.join(predict_dir,f),input_predict)
 		moveData(os.path.join(predict_dir,f),input_total)
