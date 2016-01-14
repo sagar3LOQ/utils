@@ -108,7 +108,7 @@ class CVParser(object):
         return text
 
     def _convert_rtf_to_text(self,index):
-   #     print "processing rtf"
+
         input_pdf = self.cvFile
 
         inputPath = os.getcwd()
@@ -133,7 +133,7 @@ class CVParser(object):
         input_parts = input_filename.split(".")
 
 
-        cmd = 'catdoc "%s"'%(self.cvFile) # Dangerous!!! Why not use 'subprocess'?
+        cmd = 'catdoc "%s"'%(self.cvFile)
         text = os.popen(cmd).read()
 
         return text
@@ -142,7 +142,6 @@ class CVParser(object):
 
     def _convert_docx_to_text(self,index, password=None):
 
-#        print "Decoding docx file"
         input_docx = self.cvFile
 
         inputPath = os.getcwd()
@@ -158,16 +157,14 @@ class CVParser(object):
 
 def convertFiles(in_dir,label,out_dir):
     index = 0
- #   for root, dirs, files in os.walk(in_dir):
+
     print in_dir
 
     for file in os.listdir(in_dir):
         
         file = os.path.join(in_dir, file)
-        print file
+
         if os.path.isfile(file):
-         
-#        for file in files:
             index += 1
 
             cvfile = file
@@ -209,19 +206,16 @@ if __name__ == '__main__':
     print "Started code"
     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
- #   label = genLabel(accept_dir)
     convertDirFiles(accept_dir,accept_out)
 
 
     reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
     reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
-  #  label = genLabel(reject_dir)
     convertDirFiles(reject_dir,reject_out)
 
 
     predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
     predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
-   # label = genLabel(predict_dir)
     convertDirFiles(predict_dir,predict_out)
 
 
