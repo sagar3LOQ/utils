@@ -5,6 +5,45 @@ from cqlengine.management import sync_table
 from convert2text_IterText import convertFiles2TextIterWrap
 from cqlengine.exceptions import LWTException
 
+class CassandraClient:
+
+    def __init__(self):
+        return
+
+
+    def connectCassandra(self):
+        connection.setup(['127.0.0.1'], "resumeKS")
+        sself.syncModel()
+
+    def syncModel(self):
+        sync_table(RUser)
+
+    def insertData(self, dataGen):
+        for data in dataGen:
+
+            meta = data[1].split("_")
+
+            try:
+
+                RUser.if_not_exists().create(fname = data[0],md5 =meta[0], label =meta[1], text = data[2])
+            except  LWTException as e:
+
+                print e # existing object
+
+
+    def deleteData(self):
+
+    def updateData(self):
+
+    def getAllData(self):
+        return RUser.objects()
+
+    def printData(self,cur):
+        for d in cur:
+            print d
+            print "\n\n"
+
+
 
 # Define a model
 class RUser(Model):
@@ -22,10 +61,10 @@ if __name__ == '__main__':
     try:
 
         # Connect to the resumeKS keyspace on our cluster running at 127.0.0.1
-        connection.setup(['127.0.0.1'], "resumeKS")
+    #    connection.setup(['127.0.0.1'], "resumeKS")
 
         # Sync your model with your cql table
-        sync_table(RUser)
+    #    sync_table(RUser)
         print "Connected successfully!!!"
     except :
         print "Could not connect to Cassandra" 
@@ -37,19 +76,19 @@ if __name__ == '__main__':
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
 #    convertDirFiles(accept_dir,accept_out)
     dataGen = convertFiles2TextIterWrap(accept_dir)
-    for data in dataGen:
+#    for data in dataGen:
 
-        meta = data[1].split("_")
+ #       meta = data[1].split("_")
 
-        try:
+  #      try:
 
-            RUser.if_not_exists().create(fname = data[0],md5 =meta[0], label =meta[1], text = data[2])
-        except  LWTException as e:
+    #        RUser.if_not_exists().create(fname = data[0],md5 =meta[0], label =meta[1], text = data[2])
+   #     except  LWTException as e:
 
-            print e # existing object
+     #       print e # existing object
 
-    cur = RUser.objects()
+#    cur = RUser.objects()
     
-    for d in cur:
-        print d
-        print "\n\n"
+ #   for d in cur:
+  #      print d
+#        print "\n\n"
