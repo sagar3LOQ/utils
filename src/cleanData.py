@@ -10,7 +10,6 @@ def cleanse_data(text):
 	## that can be used to clean our data with noise
 ##
 
-#	print "cleansing"
 	text = re.sub(r'[^\x00-\x7F]+',' ', text)
 	text = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",text)
 	text = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",text)
