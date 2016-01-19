@@ -20,7 +20,6 @@ res_dir = ''
 logs_dir = ''
 
 	
-
 def cconv(a, b):
     '''
     Computes the circular convolution of the (real-valued) vectors a and b.
@@ -159,7 +158,6 @@ class FeatureUtils():
         except:
             raise
         
-
 class DocumentFeatures():
 
     def __init__(self):
