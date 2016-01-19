@@ -159,9 +159,15 @@ class CVParser(object):
         input_filename = os.path.basename(input_doc)
         input_parts = input_filename.split(".")
 
-
+	
         cmd = 'catdoc "%s"'%(self.cvFile)
         text = os.popen(cmd).read()
+
+	if text == '':
+		print "Java Doc conversion %s"%(input_filename)
+        	cmdJava = 'java -jar /home/viswanath/Downloads/tika-app-1.11.jar --text "%s"'%(self.cvFile)        
+        	text = os.popen(cmdJava).read()
+
 
         return text
 
@@ -186,21 +192,15 @@ class CVParser(object):
 def convertFiles2TextIter(in_dir,label):
     index = 0
 
-#    print in_dir
-  #  fileName = []
- #   meta_data = []
- #   fileText = []
     out_dir = ''
     for file1 in os.listdir(in_dir):
-        
+
         filePath = os.path.join(in_dir, file1)
 
         if os.path.isfile(filePath):
             index += 1
 
-            cvfile = filePath
-            print "Processing :: " + file1
-         
+            cvfile = filePath         
            
             cvparser = CVParser(cvfile,label,out_dir)
             if cvparser.errorMsg:
@@ -214,25 +214,12 @@ def convertFiles2TextIter(in_dir,label):
 		
             metaStr = getMetaString(md5_str,label)
 	
-        #        outPath = out_dir + "/" + outFname
-	#	if os.path.isfile(outPath):
-	#	    print "File exist ... ! Text Discarded :/" 
-	#	    continue 
-         #       fw = open(outPath, "w")
-         #       fw.write(text)
-          #      fw.close()
-#                fileName.append(file1)
- #               meta_data.append(metaStr)
-  #              fileText.append(text)
             data = []
             data.append(file1)
             data.append(metaStr)
             data.append(text)
 
             yield data 
-        #    except:
-         #       print "Conversion Failed :("
-          #      sys.exit(1)
 
 
 
@@ -288,10 +275,10 @@ def convertDirFiles(dirIn,dirOut):
 
 def convertFiles2TextIterWrap(dirIn):
     label = genLabel(dirIn)
-    print label
+#    print label
     data1 = convertFiles2TextIter(dirIn,label)
-    for data in data1:
-        print data[0], data[1], data[2]
+    return data1
+
 
 if __name__ == '__main__':
 
