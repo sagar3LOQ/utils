@@ -1,5 +1,8 @@
 import pymongo
 from convert2text_IterText import convertFiles2TextIterWrap
+from timeMeasure import timeMeasure
+
+
 
 class MongoClient:
 
@@ -43,16 +46,18 @@ class MongoClient:
             rowData["md5"] = meta[0]
             rowData["label"] = meta[1]
             rowData["text"] = data[2]
-            if collection.find({'md5': meta[0]}).limit(1).count() > 0: continue
-            collection.insert(rowData)
+            if self.collection.find({'md5': meta[0]}).limit(1).count() > 0: continue
+            self.collection.insert(rowData)
 
 
     def deleteData(self):
+        return
 
     def updateData(self):
+        return
 
     def getAllData(self):
-        return collection.find()
+        return self.collection.find()
 
     def printData(self,cur):
         for d in cur:
@@ -61,43 +66,53 @@ class MongoClient:
 
 
 if __name__ == '__main__':
+
+    
 # Connection to Mongo DB
 
-#    try:
- #       conn=pymongo.MongoClient()
-  #      print "Connected successfully!!!"
-   # except pymongo.errors.ConnectionFailure, e:
-    #    print "Could not connect to MongoDB: %s" % e 
+    tm = timeMeasure()
 
- #   db = conn.resumeDB
- #   print db
+    tm.start()
 
-  #  collection = db.resume_collection
+    pyMonObj = MongoClient()
+    err = pyMonObj.autoConnect()
 
-    print "Started code"
-    accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
+    t1 = tm.stop()
+    if err == 0:
+        print "Connection Failed...\n"
+
+    print "Processing started...\n"
+
+ #   accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
+    accept_dir = "/home/viswanath/workspace/code_garage/te"
     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
+
 #    convertDirFiles(accept_dir,accept_out)
+
     dataGen = convertFiles2TextIterWrap(accept_dir)
-#    for data in dataGen:
- #       rowData = {}
-  #      rowData["fname"] = data[0]
-   #     meta = data[1].split("_")
-    #    rowData["md5"] = meta[0]
-     #   rowData["label"] = meta[1]
-     #   rowData["text"] = data[2]
-      #  if collection.find({'md5': meta[0]}).limit(1).count() > 0: continue
-       # collection.insert(rowData)
-#        print "\n\n"
 
-    print conn.database_names()
+    tm.start()
 
-    print db.collection_names()
+    pyMonObj.insertData(dataGen)
 
-#    cur = collection.find()
-    
-#    for d in cur:
-#        print d
-#        print "\n\n"
+
+    t2 = tm.stop()
+
+
+    print pyMonObj.conn.database_names()
+
+    print pyMonObj.db.collection_names()
+
+
+    tm.start()
+    pyMonObj.getAllData()
+    t3 = tm.stop()
+
+    print "time to connect:: " + str(t1) + "sec"
+    print "time to insert:: " + str(t2) + "sec"
+    print "time to fetchAll:: " + str(t3) + "sec"
+
+
+
 
 
