@@ -41,7 +41,6 @@ def train(model_name, is_phrased, input_data_dir, size, window, negative, sample
 	return model
 	
 def genWord2Vec(model_name, is_phrased, input_data_dir, size, window, negative, sample, min_count, workers, iterations, out_model_file):
-
 	
 	data = Sentences(input_data_dir)
 
@@ -91,7 +90,7 @@ def test_model(config):
 	print '########### Testing word2vec model: ' + model_name
 
 	model = gensim.models.Word2Vec.load(config['word2vec']['test']['model_file'])
-	test(model)
+#	test(model)
 
 def load_W2Vec(modelPath):
 	return gensim.models.Word2Vec.load(modelPath)
