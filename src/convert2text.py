@@ -136,6 +136,12 @@ class CVParser(object):
         cmd = 'catdoc "%s"'%(self.cvFile)
         text = os.popen(cmd).read()
 
+	if text == '':
+		print "Java Doc conversion %s"%(input_filename)
+        	cmdJava = 'java -jar /home/viswanath/Downloads/tika-app-1.11.jar --text "%s"'%(self.cvFile)        
+        	text = os.popen(cmdJava).read()
+
+
         return text
 
 
@@ -169,7 +175,7 @@ def convertFiles(in_dir,label,out_dir):
 
             cvfile = file
             print "Processing :: " + file
-            in_fname = genLabel(cvfile)
+            
            
             cvparser = CVParser(cvfile,label,out_dir)
             if cvparser.errorMsg:
