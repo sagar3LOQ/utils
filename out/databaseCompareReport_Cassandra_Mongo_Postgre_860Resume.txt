@@ -1,0 +1,22 @@
+testCassendra
+
+time to connect:: 0.381412029266sec
+time to insert:: 55.8094110489sec
+time to fetchAll:: 0.000214099884033sec
+
+
+
+testPostgre
+
+time to connect:: 0.296080112457sec
+time to insert:: 17.8793349266sec
+time to fetchAll:: 0.0753209590912sec
+
+
+
+testMongo
+
+time to connect:: 0.000663995742798sec
+time to insert:: 18.8491830826sec
+time to fetchAll:: 2.50339508057e-05sec
+
