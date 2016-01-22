@@ -1,0 +1,127 @@
+RESUME SHORTLISTING SYSTEM
+
+TOOLS USED:
+
+i) Python's gensim for Word2Vec
+ii) Python 2.7
+iii) Data Storage = Flat files / MongoDB / Cassandra/ PostgreSQL still depends #TODO
+
+
+
+Directory Structure:
+
+Root
+|
+|-- config
+|-- src
+|-- logs
+|-- out
+|-- raw_data
+|-- raw_text
+|-- model
+|-- in_data
+
+i) config: contains configuration file to be used by the program
+
+ii) src: contains source code of the program
+
+iii) logs: contains log file during execution
+
+iv) out: contains output of the execution
+
+v) raw_data: contains your raw resume in the format of doc, docx, pdf and rtf
+
+vi) raw_text: contains converted raw resume into text files
+
+vii) model: contains models such as word2vec, tfidf and LR
+
+viii) in_data: contains actual data divided into train, test and predict data that need to be given to our prediction model to predict
+
+Sub Directory:
+
+raw_data/ raw_text
+|
+|-- accept = contains all accepted resume
+|-- reject = contains all rejected resume
+|-- predict = contains resume that needs to be predicted
+
+in_data
+|
+|-- train = contains resume used for training
+|-- test = contains resume for testing the model
+|-- predict = contains resume that needs to be predicted
+
+src:
+|
+|-- cleanData.py
+|-- convert2text_IterText.py
+|-- convert2text.py
+|-- databaseFile.py
+|-- extSent.py
+|-- model_srl.py
+|-- model_srl_utils.py
+|-- model_topN.py
+|-- model_topn_test.py
+|-- setupSys.py
+|-- testCassendra.py
+|-- testMongo.py
+|-- testPostgres.py
+|-- text_extract_doc_flist.py
+|-- timeMeasure.py
+|-- trainTfidfModel.py
+|-- trainWord2Vec.py
+|-- word2vec_utils.py
+
+i)     cleanData.py :
+    Library for cleaning raw data into text
+
+ii)    convert2text_IterText.py
+    Convert raw document file into text and this function return it in iterative manner
+
+iii)   convert2text.py
+    Convert raw document file into text and this function return all documents in a list
+
+iv)    databaseFile.py
+    file to test database
+
+v)     extSent.py
+    utility function to extract statement from the text files
+
+vi)    model_srl.py
+    Code for srl based models which uses SRL Semantic Role Language and Word2Vec model vectors for generating doc Vectors and using it for training the LR model.
+
+vii)   model_srl_utils.py
+    Utility function for model_srl.py
+
+viii)  model_topN.py
+    Code for TopN based models which uses topN words based on TFIDF for each document as positive and rest topM words as negative words with Word2Vec model multiplied by TFIDF vectors and training it for generating LR coefficients used as doc Vectors and using it for training the LR model.
+
+ix)    model_topn_test.py
+    Code for TopN based models which uses topN words for each document as positive and rest topM words as negative words with Word2Vec model vectors and training it for generating LR coefficients used as doc Vectors and using it for training the LR model.
+
+x)     setupSys.py
+    Code to setup convert and process data for execution
+
+xi)    testCassendra.py
+    Code to test Cassandra database performance for insertion and fetching all data
+
+xii)   testMongo.py
+    Code to test Mongo database performance for insertion and fetching all data
+
+xiii)  testPostgres.py
+    Code to test Postgre database performance for insertion and fetching all data
+
+xiv)   text_extract_doc_flist.py
+    utility function for Converting doc to text files function
+
+xv)    timeMeasure.py
+    utility function for measuring time
+
+xvi)   trainTfidfModel.py
+    utility function for training Tfidf models from 'total' folder
+
+xvii)  trainWord2Vec.py
+    utility function for training Word2vec models from 'total' folder
+
+xviii) word2vec_utils.py
+    utility function for returning an iterator that will fetch each file after cleaning text 
