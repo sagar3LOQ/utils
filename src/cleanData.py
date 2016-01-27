@@ -3,6 +3,7 @@ import re
 import string
 
 
+
 def cleanse_data(text):
 
 ##
@@ -11,7 +12,7 @@ def cleanse_data(text):
 ##
 
 	text = re.sub(r'[^\x00-\x7F]+',' ', text)
-	text = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",text)
+	text = re.sub(r'(\d+[\+\s]*(Years|years|Year|year|Yrs|yrs|yr))',"year",text)
 	text = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",text)
 	text = re.sub(r'(((\+91|0)?( |-)?)?\d{10})',' MOBILE ',text)
 	text = re.sub(r"[\r\n]+[\s\t]+",'\n',text)	
@@ -24,4 +25,3 @@ def cleanse_data(text):
         	text =text.replace(c," ")	
 
 	return text.lower()
-
