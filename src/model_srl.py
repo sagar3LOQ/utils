@@ -12,45 +12,25 @@ import string
 from pprint import pprint
 from configobj import ConfigObj
 import traceback
-from tsne import tsne
 import re, os, ast
 import logging
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.metrics import classification_report, matthews_corrcoef, roc_auc_score
 from sklearn import datasets, linear_model, cross_validation
 from sklearn.metrics import precision_recall_fscore_support as score
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from model_srl_utils import DocumentFeatures
-from text_extract_doc import Sentences
+from sentenceUtil import Sentences
 import numpy as Math
 import pylab as Plot
 from senna_py import srl_extract
+from cleanData import cleanse_data
 
 
 
 res_dir = '/home/viswanath/workspace/code_garage/conver2txt/out'
 logs_dir = '/home/viswanath/workspace/code_garage/conver2txt/logs'
 
-def cleanse_data(text):
-
-##
-	##  Remove all non relevent symbols and get the text
-	## that can be used to clean our data with noise
-##
-
-#	print "cleansing"
-	temp = re.sub(r'[^\x00-\x7F]+',' ', text)
-	temp = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",temp)
-	temp = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",temp)
-	temp = re.sub(r'(((\+91|0)?( |-)?)?\d{10})',' MOBILE ',temp)
-	temp = re.sub(r"[\r\n]+[\s\t]+",'\n',temp)	
-	temp = re.sub(r"\.[\s\t\n]+",'\n',temp)	
-	wF = set(string.punctuation) - set(["+"])
-	for c in wF:
-        	temp =temp.replace(c," ")	
-	
-	return temp.lower()
 
 
 class TrainData():
@@ -94,11 +74,47 @@ class TrainData():
 		return wt_vect_data, label_data, fn
 
 
+
+class PredictData():
+
+	def __init__(self):
+		pass
+
+	def load_w2vmodel(self,model):
+		return gensim.models.Word2Vec.load(model)
+
+	def get_tfidf_model(self, dirname):
+		
+		data = Sentences(dirname)
+		tfidf_vectorizer = TfidfVectorizer()
+		tfidf_matrix_train = tfidf_vectorizer.fit_transform(data)
+		return tfidf_vectorizer
+	
+	def train_model(self, dirname, w2v_model_path,ndim):
+		
+		tfidf_model = self.get_tfidf_model(dirname)
+		w2v_model = self.load_w2vmodel(w2v_model_path)
+		trd = DocumentFeatures()
+		wt_vect_data = []
+		label_data = []
+		fn = []
+		for fname in os.listdir(dirname):
+			f = open(os.path.join(dirname, fname))
+			text = str.decode(f.read(), "UTF-8", "ignore")
+			text = cleanse_data(text)	
+			print "processsing ::" + fname
+			VA0, VA1 =srl_extract(text)
+			sent_vect = trd.get_sent_circconv_vec(text, w2v_model, ndim, 'tfidf', tfidf_model,VA0, VA1)
+
+			fn.append(fname)
+			wt_vect_data.append(sent_vect[0])
+
+		return wt_vect_data, fn
 		
 		
 class genSRLVec():
 
-	def __init__(self,train_dirname,test_dirname,w2v_model_path,size):
+	def __init__(self,train_dirname,test_dirname,predict_dirname,w2v_model_path,size):
 		self.train_dirname = train_dirname
 		self.test_dirname = test_dirname
 		self.w2v_model_path = w2v_model_path
@@ -111,6 +127,8 @@ class genSRLVec():
 		self.result = []
 		self.fn_train = []
 		self.fn_test = []
+		self.predict_dirname = predict_dirname
+		self.xPred_wt = []		
 
 	def start(self):
 
@@ -127,6 +145,28 @@ class genSRLVec():
 
 		self.result = self.getAnalysis(self.Y_test,self.Y_pred)
 
+
+
+	def train_predict(self):
+
+		td = TrainData()
+		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.size)
+
+		# For extracting data for predict set
+		pd = PredictData()
+		self.xPred_wt,self.fn_test = pd.predict_model(self.predict_dirname, self.w2v_model_path, self.size)
+
+
+		print "###################### LR Training ###########################"
+		logit = LogisticRegression(C=1.0).fit(self.x_wt, self.Ylabels)
+
+		print "####################### LR Prediction ##########################"
+		self.Y_pred = logit.predict(self.xPred_wt)
+
+		timestr = time.strftime("%Y_%m_%d_%H%M%S")
+		fp = "pred_output_topN_" + str(self.topN) +"_" +timestr+".tsv"
+		fp = res_dir + "/" + fp
+		self.savePredictResult2File(self.fn_test,self.Y_pred,fp)	
 
 	def trainTotal(self):
 
@@ -244,7 +284,7 @@ class genSRLVec():
 if __name__ == '__main__': 
 	train_dirname = '/home/viswanath/workspace/test_resume/train'
 	test_dirname = '/home/viswanath/workspace/test_resume/test'
-	w2v_model_path = '/home/viswanath/workspace/test_resume/model/w2v_model_100.mod'
+	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_100v3.mod'
 	size = 100
 
 	gsl = genSRLVec(train_dirname,test_dirname,w2v_model_path,size)
