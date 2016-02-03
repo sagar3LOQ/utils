@@ -331,7 +331,7 @@ class genTopNVec:
 	# write result to file
 	def saveResult2file(self,fname):
 
-		fname = res_dir + "/" + fname
+		#fname =  fname
 		input_filename=open(fname, "wb")
 		input_filename.write(("filname\tlabelled\tpredicted\n"))
 
