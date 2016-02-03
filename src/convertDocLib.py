@@ -148,7 +148,6 @@ class CVParser(object):
             cmdJava = 'java -jar ' + tikkaPath +' --text "%s"'%(self.cvFile)        
             text = os.popen(cmdJava).read()
 
-
         return text
 
 

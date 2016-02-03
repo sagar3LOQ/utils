@@ -14,6 +14,7 @@ import docx2txt
 
 import hashlib
 
+tikkaPath = '/home/viswanath/Downloads/tika-app-1.11.jar'
 
 def cleanse_data(text):
 
@@ -163,11 +164,10 @@ class CVParser(object):
         cmd = 'catdoc "%s"'%(self.cvFile)
         text = os.popen(cmd).read()
 
-	if text == '':
-		print "Java Doc conversion %s"%(input_filename)
-        	cmdJava = 'java -jar /home/viswanath/Downloads/tika-app-1.11.jar --text "%s"'%(self.cvFile)        
-        	text = os.popen(cmdJava).read()
-
+        if text == '':
+            print "Java Doc conversion %s"%(input_filename)
+            cmdJava = 'java -jar ' + tikkaPath +' --text "%s"'%(self.cvFile)        
+            text = os.popen(cmdJava).read()
 
         return text
 

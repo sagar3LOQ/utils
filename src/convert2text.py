@@ -14,6 +14,8 @@ import docx2txt
 
 import hashlib
 
+tikkaPath = '/home/viswanath/Downloads/tika-app-1.11.jar'
+
 def getMD5HashDigest(text):
     return hashlib.md5(text).hexdigest()
 
@@ -136,11 +138,10 @@ class CVParser(object):
         cmd = 'catdoc "%s"'%(self.cvFile)
         text = os.popen(cmd).read()
 
-	if text == '':
-		print "Java Doc conversion %s"%(input_filename)
-        	cmdJava = 'java -jar /home/viswanath/Downloads/tika-app-1.11.jar --text "%s"'%(self.cvFile)        
-        	text = os.popen(cmdJava).read()
-
+        if text == '':
+            print "Java Doc conversion %s"%(input_filename)
+            cmdJava = 'java -jar ' + tikkaPath +' --text "%s"'%(self.cvFile)        
+            text = os.popen(cmdJava).read()
 
         return text
 
@@ -211,17 +212,17 @@ def convertDirFiles(dirIn,dirOut):
 if __name__ == '__main__':
 
     print "Started code"
-    accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
-    accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
-    convertDirFiles(accept_dir,accept_out)
+ #   accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
+ #   accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
+ #   convertDirFiles(accept_dir,accept_out)
 
 
-    reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
-    reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
-    convertDirFiles(reject_dir,reject_out)
+  #  reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
+  #  reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
+  #  convertDirFiles(reject_dir,reject_out)
 
 
-    predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
+    predict_dir = "/home/viswanath/Downloads/reso"
     predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
     convertDirFiles(predict_dir,predict_out)
 
