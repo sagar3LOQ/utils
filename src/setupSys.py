@@ -1,6 +1,7 @@
 import shutil
 import model_topN as mTopNTf
 import model_topn_test as mTopN
+import model_srl as mSRL
 import trainWord2Vec as mWord2Vec
 import convert2text as mDoc2txt
 import os
@@ -73,8 +74,9 @@ def trainNtestData():
 		gt.start()
 
 	elif choice == "3":
-		print "SRL based model using Word2Vec vectors and Logistic Regression Begins ...\n"
-		print "Under Integration :/"
+		gt = mSRL.genSRLVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size)
+		gt.start()
+	
 
 	else:
 		print "Sorry! I think its an invalid option :("
@@ -103,8 +105,9 @@ def NFoldTest():
 		gt.NFoldTest(iter_N=10,split =0.27)
 
 	elif choice == "3":
-		print "SRL based model using Word2Vec vectors and Logistic Regression Begins ...\n"
-		print "Under Integration :/"
+		gt = mSRL.genSRLVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size)
+		gt.NFoldTest(iter_N=10,split =0.27)
+	
 
 	else:
 		print "Sorry! I think its an invalid option :("
@@ -133,8 +136,9 @@ def predictData():
 		gt.train_predict()
 
 	elif choice == "3":
-		print "SRL based model using Word2Vec vectors and Logistic Regression Begins ...\n"
-		print "Under Integration :/"
+		gt = mSRL.genSRLVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size)
+		gt.start()		
+	
 
 	else:
 		print "Sorry! I think its an invalid option :("
@@ -313,4 +317,5 @@ def cleanShuffle(split=0.20):
 
 if __name__ == '__main__':
 #	convertRawFiles2Text()
-	cleanShuffle()
+#	cleanShuffle()
+	trainNtestData()
