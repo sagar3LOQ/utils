@@ -2,6 +2,9 @@ import psycopg2
 from convert2text_IterText import convertFiles2TextIterWrap
 from timeMeasure import timeMeasure
 
+
+
+# Class for accessing PostgreSQL Database
 class PostgreClient:
 
     def __init__(self):
@@ -54,7 +57,6 @@ if __name__ == '__main__':
 # Connection to Postgresql DB
 
     try:
-
 
         tm = timeMeasure()
 

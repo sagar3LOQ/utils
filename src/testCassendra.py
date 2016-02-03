@@ -6,7 +6,7 @@ from convert2text_IterText import convertFiles2TextIterWrap
 from cqlengine.exceptions import LWTException
 from timeMeasure import timeMeasure
 
-# Define a model
+# Define a model for existing table in Cassandra Database
 class RUser(Model):
   fname = columns.Text()
   md5 = columns.Text(primary_key=True)
@@ -15,7 +15,7 @@ class RUser(Model):
  
 
 
-
+# Class for accessing Cassandra Database
 
 class CassandraClient:
 

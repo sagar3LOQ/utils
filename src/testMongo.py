@@ -3,6 +3,7 @@ from convert2text_IterText import convertFiles2TextIterWrap
 from timeMeasure import timeMeasure
 
 
+# Class for accessing MongoDB Database
 
 class MongoClient:
 
@@ -16,7 +17,8 @@ class MongoClient:
         try:
             self.conn = pymongo.MongoClient()
             return self.conn
-          #  print "Connected successfully!!!"
+
+
         except pymongo.errors.ConnectionFailure, e:
             print "Could not connect to MongoDB: %s" % e 
 
