@@ -1,7 +1,4 @@
 
-
-
-
 import sys
 import gensim
 from gensim.models import Word2Vec
@@ -33,32 +30,12 @@ import numpy as Math
 import pylab as Plot
 import operator
 import time
+from cleanData import cleanse_data
 
 
 res_dir = ''
 logs_dir = ''
 
-
-
-def cleanse_data(text):
-
-##
-	##  Remove all non relevent symbols and get the text
-	## that can be used to clean our data with noise
-##
-
-#	print "cleansing"
-	text = re.sub(r'[^\x00-\x7F]+',' ', text)
-	text = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",text)
-	text = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",text)
-	text = re.sub(r'(((\+91|0)?( |-)?)?\d{10})',' MOBILE ',text)
-	text = re.sub(r"[\r\n]+[\s\t]+",'\n',text)	
-	wF = set(string.punctuation) - set(["+"])
-	for c in wF:
-        	text =text.replace(c," ")	
-
-	return text.lower()
-#	return text
 
 ## Training data class
 
@@ -196,7 +173,7 @@ class PredictData():
 			f = open(os.path.join(dirname, fname),"r")
 			raw_text = str.decode(f.read(), "UTF-8", "ignore")
 			text = cleanse_data(raw_text)
-			pword,topN = self.top_n_words_doc(text,tfidf_model,topN)
+			pword,topN = self.top_n_words_doc( w2v_model_path,text,tfidf_model,topN)
 			X_coeff = self.get_docvec( w2v_model_path,tfidf_model, pword, text,topN)
 
 			fn.append(fname)
@@ -429,8 +406,8 @@ if __name__ == '__main__':
 
 	train_dirname = '/home/viswanath/workspace/test_resume/train'
 	test_dirname = '/home/viswanath/workspace/resume_data/res_dir/test'
-	predict_dirname = '/home/viswanath/workspace/test_resume/predict'
-	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_size100_win5_neg20_sampleD1_mincount3_iter50.mod' #'/home/viswanath/workspace/test_resume/model/w2v_model_100v3.mod'
+	predict_dirname = '/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict'
+	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_100v3.mod' 
 	total_dirname = '/home/viswanath/workspace/test_resume/train'
 	size = 100
 	topNA = [200]  
@@ -441,11 +418,7 @@ if __name__ == '__main__':
 	for topN in topNA:
 		print "\nFor TopN N=" + str(topN) + "\n"
 		gt = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
-		gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
+	#	gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
+		gt.train_predict()
 	timestr = time.strftime("%Y_%m_%d_%H%M%S")
 
-
-#	gt.printResult()
-#	gt.saveResult2file("topN_result_"+timestr+".tsv")
-#	gt.NFoldTest()
-#	print gt.getResult()
