@@ -1,29 +1,7 @@
 
-
-
 import os,re,gensim, string
 from nltk.corpus import stopwords
-
-
-def cleanse_data(text):
-
-##
-	##  Remove all non relevent symbols and get the text
-	## that can be used to clean our data with noise
-##
-
-	text = re.sub(r'[^\x00-\x7F]+',' ', text)
-	text = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",text)
-	text = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",text)
-	text = re.sub(r'(((\+91|0)?( |-)?)?\d{10})',' MOBILE ',text)
-	text = re.sub(r"[\r\n]+[\s\t]+",'\n',text)
-	cachedStopWords = stopwords.words("english")
-	text = ' '.join([word for word in text.split(" ") if word not in cachedStopWords])	
-	wF = set(string.punctuation) - set(["+"])
-	for c in wF:
-        	text =text.replace(c," ")	
-
-	return text.lower()
+from cleanData import cleanse_data
 
 
 def scan_file(dir_name):

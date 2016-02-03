@@ -6,26 +6,9 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 import time
 import pickle
+from cleanData import cleanse_data
 
 
-def cleanse_data(text):
-
-##
-	##  Remove all non relevent symbols and get the text
-	## that can be used to clean our data with noise
-##
-
-#	print "cleansing"
-	temp = re.sub(r'[^\x00-\x7F]+',' ', text)
-	temp = re.sub(r'(\d+(\s)?(yrs|year|years|Yrs|Years|Year|yr))'," TIME ",temp)
-	temp = re.sub(r'[\w\.-]+@[\w\.-]+'," EMAIL ",temp)
-	temp = re.sub(r'(((\+91|0)?( |-)?)?\d{10})',' MOBILE ',temp)
-	temp = re.sub(r"[\r\n]+[\s\t]+",'\n',temp)	
-	wF = set(string.punctuation) - set(["+"])
-	for c in wF:
-        	temp =temp.replace(c," ")	
-
-	return temp.lower()
 
 
 def scan_file(dir_name):
