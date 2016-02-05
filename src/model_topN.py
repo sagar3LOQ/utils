@@ -31,7 +31,7 @@ import pylab as Plot
 import operator
 import time
 from cleanData import cleanse_data
-
+import pickle
 
 res_dir = ''
 logs_dir = ''
@@ -69,7 +69,7 @@ class TrainData():
 		label_data = []
 		fn = []
 		for fname in os.listdir(dirname):
-			print "Processing = " + fname
+		#	print "Processing = " + fname
 			f = open(os.path.join(dirname, fname),"r")
 			raw_text = str.decode(f.read(), "UTF-8", "ignore")
 			text = cleanse_data(raw_text)
@@ -116,8 +116,8 @@ class TrainData():
 		tokens = text.split()
 		X1 = [tfidf_model.idf_[tfidf_model.vocabulary_[i]]* w2vModel[i] for i in pos_words if i in tfidf_model_vocab if i in w2vModel.vocab]
 		if len(neg_words) == 0:
-			n_neg = topN*neg_fact
-		#	n_neg = 200
+		#	n_neg = topN*neg_fact
+			n_neg = 200
 #			sim_pos_words = [x[0] for x in w2vModel.most_similar_cosmul(pos_words, topn=200)]
 			sim_pos_words = []
 			for word in pos_words:
@@ -136,9 +136,6 @@ class TrainData():
 
 		docvector = regr.coef_
 		return docvector
-
-
-
 
 
 class PredictData():
@@ -169,7 +166,7 @@ class PredictData():
 	
 		fn = []
 		for fname in os.listdir(dirname):
-			print "Processing :: " + fname
+		#	print "Processing :: " + fname
 			f = open(os.path.join(dirname, fname),"r")
 			raw_text = str.decode(f.read(), "UTF-8", "ignore")
 			text = cleanse_data(raw_text)
@@ -180,9 +177,6 @@ class PredictData():
 			X.append(X_coeff[0])
 	
 		return X, fn
-
-
-
 
 
 # find top N words from TFIDF model
@@ -276,6 +270,54 @@ class genTopNVec:
 		self.Y_pred = logit.predict(self.xTest_wt)
 
 		self.result = self.getAnalysis(self.Y_test,self.Y_pred)
+		self.printResult()
+
+
+
+	def genLRModel(self):
+		td = TrainData()
+
+# For extracting data for train set
+		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.topN,self.size)
+		print "###################### LR Training ###########################"
+		logit = LogisticRegression(C=1.0)
+		logit.fit(self.x_wt, self.Ylabels)
+
+		# Saving logistic regression model from training set 1
+		modelFileSave = open('../model/topN_LR_Model.mod', 'wb')
+		pickle.dump(logit, modelFileSave)
+		#modelFileSave.write(logit) 
+		modelFileSave.close()  
+
+
+	def cachedPredictModel(self):
+		# Loading logistic regression model from training set 1    
+		modelFileLoad = open('../model/topN_LR_Model.mod', 'rb')
+		logit = pickle.load(modelFileLoad)
+
+		pd = PredictData()
+		self.xPred_wt,self.fn_test = pd.predict_model(self.predict_dirname, self.w2v_model_path,self.topN,self.size)
+
+		self.Y_pred = logit.predict(self.xPred_wt)
+		timestr = time.strftime("%Y_%m_%d_%H%M%S")
+		fp = "pred_output_topN_" + str(self.topN) +"_" +timestr+".tsv"
+		fp = res_dir + "/" + fp
+		self.savePredictResult2File(self.fn_test,self.Y_pred,fp)
+
+	def cachedTestModel(self):
+		# Loading logistic regression model from training set 1    
+		modelFileLoad = open('../model/topN_LR_Model.mod', 'rb')
+		logit = pickle.load(modelFileLoad)
+		modelFileLoad.close()
+
+		td = TrainData()
+		self.xTest_wt,self.Y_test,self.fn_test = td.train_model(self.test_dirname, self.w2v_model_path,self.topN,self.size)
+
+
+		self.Y_pred = logit.predict(self.xTest_wt)
+
+		self.result = self.getAnalysis(self.Y_test,self.Y_pred)
+		self.printResult()
 
 
 	def train_predict(self):
@@ -300,6 +342,24 @@ class genTopNVec:
 		fp = res_dir + "/" + fp
 		self.savePredictResult2File(self.fn_test,self.Y_pred,fp)	
 	
+	def train_predict_iter(self):
+		td = TrainData()
+
+		
+		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.topN,self.size)
+
+# For extracting data for predict set
+		pd = PredictData()
+		self.xPred_wt,self.fn_test = pd.predict_model(self.predict_dirname, self.w2v_model_path,self.topN,self.size)
+
+
+		print "###################### LR Training ###########################"
+		logit = LogisticRegression(C=1.0).fit(self.x_wt, self.Ylabels)
+
+		print "####################### LR Prediction ##########################"
+		self.Y_pred = logit.predict(self.xPred_wt)
+
+		return self.fn_test,self.Y_pred
 
 	## Print results 
 	def printAnalysis(self,true_pred,y_pred1):
@@ -342,25 +402,14 @@ class genTopNVec:
 	# write predict data result to file
 	def savePredictResult2File(self,fn_test,Y_pred,fname):
 
-		fname = res_dir + "/" + fname
+	#	fname = res_dir + "/" + fname
 		input_filename=open(fname, "wb")
-		input_filename.write(("filname\tpredicted\n"))
+		input_filename.write(("filename\tpredicted\n"))
 		print Y_pred
 		for i in range(len(Y_pred)):
 			input_filename.write((fn_test[i]+"\t"+str(self.Y_pred[i])+"\n"))
 		input_filename.close()
 		
-
-	# Save N- fold result to file		
-	def saveNFoldResult2file(self,y_test,y_pred,fn_test,fname):
-		
-		fname = res_dir + "/" + fname
-		input_filename=open(fname, "wb")
-		input_filename.write(("filname\tlabelled\tpredicted\n"))
-
-		for i in range(len(y_test)):
-			input_filename.write((fn_test[i]+"\t"+str(y_test[i])+"\t"+str(y_pred[i])+"\n"))
-		input_filename.close()
 
 	# perform N-fold test
 	def NFoldTest(self,total_dirname, iter_N=5,split =0.30,random_state=0):
@@ -393,10 +442,8 @@ class genTopNVec:
 				fn_test.append(fn_total[i])
 				k += 1
 
-		#	fn = "Output_topN_" + str(j) +"_"+timestr + ".tsv"
 			print "writing data to file"
-			#self.saveNFoldResult2file(y_test,y_pred,fn_test,fn)
-			#self.printAnalysis(y_test,y_pred)
+	
 			matthews_corrcoef, roc_auc_score, precision_0 , precision_1 , recall_0 , recall_1 , fscore_0 , fscore_1 , support_0, support_1 = self.getAnalysis(y_test,y_pred)
 			Resultstr = str(matthews_corrcoef)+"\t"+str(roc_auc_score)+"\t"+str(precision_0)+"\t"+str(precision_1)+"\t"+str(recall_0)+"\t"+str(recall_1)+"\t"+str(fscore_0)+"\t"+str(fscore_1)+"\t"+str(support_0)+"\t"+str(support_1)+"\n"
 			fp.write(Resultstr)
@@ -405,7 +452,7 @@ if __name__ == '__main__':
 
 
 	train_dirname = '/home/viswanath/workspace/test_resume/train'
-	test_dirname = '/home/viswanath/workspace/resume_data/res_dir/test'
+	test_dirname = '/home/viswanath/workspace/test_resume/train'
 	predict_dirname = '/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict'
 	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_100v3.mod' 
 	total_dirname = '/home/viswanath/workspace/test_resume/train'
@@ -419,6 +466,10 @@ if __name__ == '__main__':
 		print "\nFor TopN N=" + str(topN) + "\n"
 		gt = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
 	#	gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
-		gt.train_predict()
+ 	#	gt2 = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
+		gt.start()
+	#	gt2.genLRModel()
+	#	gt2.cachedTestModel()
+
 	timestr = time.strftime("%Y_%m_%d_%H%M%S")
 
