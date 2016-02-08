@@ -14,6 +14,12 @@ import docx2txt
 
 import hashlib
 
+import tarfile
+
+import tarfile
+
+from pyunpack import Archive
+
 from cleanData import cleanse_data
 
 tikkaPath = '/home/viswanath/Downloads/tika-app-1.11.jar'
@@ -26,7 +32,17 @@ def getOutName(md5Str,label):
     strg = str(md5Str) + "_" + label + ".dat"
     return strg
 
+def cleanData(text):
 
+##
+	##  Remove all non relevent symbols and get the text
+	## that can be used to clean our data with noise
+##
+
+	text = re.sub(r'[^\x00-\x7F]+',' ', text)
+	text = re.sub(r"[\r\n]+[\s\t]+",'\n',text)	
+	text = re.sub(r"\.[\s\t\n]+",'\n',text)	
+	return text
 
 class CVParser(object):
     # Some commonly used regex patterns:
@@ -168,6 +184,76 @@ class CVParser(object):
         return text.encode('utf-8')
 
 
+class decompressFiles:
+
+    def __init__(self,compressFile, decompressDir):
+        self.compressFile = compressFile
+        self.deCompressDir = decompressDir
+
+    def decompressFile(self):
+    	supportFormat = ['.7z','.bz2', '.gz', '.rar','.xz', '.zip']
+    	fname, fileExt = os.path.splitext(self.compressFile)
+        if fileExt == '.tar':
+	        tarfile.open(self.compressFile).extractall(self.deCompressDir)
+	        return 1
+        if fileExt in supportFormat:
+ 	        Archive(self.compressFile).extractall(self.deCompressDir)
+	        return 1
+        return 0
+
+    def ParseDecompressDir(self,out_dir,fname):
+    	lst = []
+        index = 0
+        outPath = out_dir + '/' + fname
+        for root, dirs, files in os.walk(self.deCompressDir):
+            for name in files:
+                lst.append(root + '/' + name)
+
+        label = ''
+        data = ''
+
+    	for f in lst:
+            print f 
+            index += 1
+            cvparser = CVParser(f,label,out_dir)
+            if cvparser.errorMsg:
+                print cvparser.errorMsg
+                sys.exit(0)
+           
+            text = cvparser.preprocess(index)
+            if text == 0:
+                continue
+            text = cleanData(text)
+            
+            data += "\n\n" + text
+
+
+        print outPath
+        if os.path.isfile(outPath):
+
+            opt = raw_input('File exist ... ! Overwrite (Y/N)?\n')
+            if ('y' == opt.lower()) :
+                fw = open(outPath, "w")
+                fw.write(data)
+                fw.close()
+                print 'overwritten !!...'
+            else :
+                print "file skipped...."
+                return
+
+        fw = open(outPath, "w")
+        fw.write(data)
+        fw.close()
+
+       
+    def genSingleFile(self, singleDataFile):
+        outDir = self.deCompressDir
+        singleDir = outDir + '/singleData'
+        if not os.path.exists(singleDir):
+            os.mkdir(singleDir)
+        self.decompressFile()
+        self.ParseDecompressDir(singleDir,singleDataFile)
+
 
 def convertFiles2TextIter(in_dir,label):
     index = 0
@@ -282,32 +368,34 @@ if __name__ == '__main__':
     # predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
     # predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
     # convertDirFiles(predict_dir,predict_out)
-    index = 0
-    print "Started code"
-    accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
-    accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
-#    convertDirFiles(accept_dir,accept_out)
-    iterP = convertFiles2TextIterWrap(accept_dir)
-    for f in iterP:
-        index += 1
-        print f
+#     index = 0
+#     print "Started code"
+#     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
+#     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
+# #    convertDirFiles(accept_dir,accept_out)
+#     iterP = convertFiles2TextIterWrap(accept_dir)
+#     for f in iterP:
+#         index += 1
+#         print f
 
 
-    reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
-    reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
- #   convertDirFiles(reject_dir,reject_out)
-    iterP = convertFiles2TextIterWrap(reject_dir)
-    for f in iterP:
-        index += 1
-        print index
+#     reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
+#     reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
+#  #   convertDirFiles(reject_dir,reject_out)
+#     iterP = convertFiles2TextIterWrap(reject_dir)
+#     for f in iterP:
+#         index += 1
+#         print index
 
 
-    predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
-    predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
-  #  convertDirFiles(predict_dir,predict_out)
-    iterP = convertFiles2TextIterWrap(predict_dir)
-    for f in iterP:
-        index += 1
-        print index
+#     predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
+#     predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
+#   #  convertDirFiles(predict_dir,predict_out)
+#     iterP = convertFiles2TextIterWrap(predict_dir)
+#     for f in iterP:
+#         index += 1
+#         print index
 
 
+    obj = decompressFiles('/home/viswanath/Downloads/compressFIle/3LOQ Profiles.tar','/home/viswanath/Downloads/compressFIle/output')
+    obj.genSingleFile('resultant.txt')
