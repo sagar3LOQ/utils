@@ -354,48 +354,6 @@ def convertFiles2TextIterWrap(dirIn):
 
 if __name__ == '__main__':
 
-    # print "Started code"
-    # accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
-    # accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
-    # convertDirFiles(accept_dir,accept_out)
-
-
-    # reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
-    # reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
-    # convertDirFiles(reject_dir,reject_out)
-
-
-    # predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
-    # predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
-    # convertDirFiles(predict_dir,predict_out)
-#     index = 0
-#     print "Started code"
-#     accept_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/accept"
-#     accept_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/accept"
-# #    convertDirFiles(accept_dir,accept_out)
-#     iterP = convertFiles2TextIterWrap(accept_dir)
-#     for f in iterP:
-#         index += 1
-#         print f
-
-
-#     reject_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/reject"
-#     reject_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/reject"
-#  #   convertDirFiles(reject_dir,reject_out)
-#     iterP = convertFiles2TextIterWrap(reject_dir)
-#     for f in iterP:
-#         index += 1
-#         print index
-
-
-#     predict_dir = "/home/viswanath/workspace/code_garage/conver2txt/raw_data/predict"
-#     predict_out = "/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict"
-#   #  convertDirFiles(predict_dir,predict_out)
-#     iterP = convertFiles2TextIterWrap(predict_dir)
-#     for f in iterP:
-#         index += 1
-#         print index
-
 
     obj = decompressFiles('/home/viswanath/Downloads/compressFIle/3LOQ Profiles.tar','/home/viswanath/Downloads/compressFIle/output')
     obj.genSingleFile('resultant.txt')
