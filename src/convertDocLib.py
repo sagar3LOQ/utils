@@ -7,6 +7,8 @@ import textract
 import magic # Needs libmagic1 installed.
 
 
+import html2text
+
 # For doc, docx and odt to text conversions:
 import docx2txt
 
@@ -71,7 +73,7 @@ class CVParser(object):
         ext = ext.lower()
         primaryEnc, secondaryEnc = filetype.split("/")
 
-        if ext == 'pdf' or ext == 'doc' or ext == 'docx' or ext =='rtf':
+        if ext == 'pdf' or ext == 'doc' or ext == 'docx' or ext =='rtf' or ext == 'html' or ext == 'htm':
             self.cvFormat = ext
 
             return(True)
@@ -100,6 +102,10 @@ class CVParser(object):
             return self._convert_doc_to_text(index)
         elif self.cvFormat == 'rtf':    
             return self._convert_rtf_to_text(index)
+        elif self.cvFormat == 'html':    
+            return self._convert_htm_to_text()
+        elif self.cvFormat == 'htm':    
+            return self._convert_htm_to_text()
         elif self.cvFormat == 'txt':
             return self._text_process()
         else:
@@ -108,6 +114,12 @@ class CVParser(object):
 
     def _text_process(self):
         return open(self.cvFile).read()
+
+    def _convert_htm_to_text(self):
+
+        htmlText =  open(self.cvFile).read()
+
+        return html2text.html2text(htmlText.decode('utf-8'))
 
 
     def _convert_pdf_to_text(self,index):
@@ -350,6 +362,17 @@ def convertFiles2TextIterWrap(dirIn):
 
 if __name__ == '__main__':
 
+    cvfile = "/home/viswanath/Documents/Blog_ Encoding and Python_ The UnicodeDecodeError exception.html" 
+             
+    cvparser = CVParser(cvfile,'','')
+    if cvparser.errorMsg:
+        print cvparser.errorMsg
+        sys.exit(0)
+           
+    text = cvparser.preprocess(0)
+        
+    text = cleanse_data(text)
+    print text
 
-    obj = decompressFiles('/home/viswanath/Downloads/compressFIle/3LOQ Profiles.tar','/home/viswanath/Downloads/compressFIle/output')
-    obj.genSingleFile('resultant.txt')
+#    obj = decompressFiles('/home/viswanath/Downloads/compressFIle/3LOQ Profiles.tar','/home/viswanath/Downloads/compressFIle/output')
+ #   obj.genSingleFile('resultant.txt')
