@@ -6,15 +6,11 @@ import textract
 # To identify file type:
 import magic # Needs libmagic1 installed.
 
-# For parsing CV using a grammar definition:
-import pyparsing
 
 # For doc, docx and odt to text conversions:
 import docx2txt
 
 import hashlib
-
-import tarfile
 
 import tarfile
 
