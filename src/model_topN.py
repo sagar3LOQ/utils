@@ -1,33 +1,15 @@
 
 import sys
-import gensim
 from gensim.models import Word2Vec
-from sklearn.externals import joblib
-from gensim import utils, matutils
 import random
-import scipy
-from nltk.corpus import stopwords
 import numpy as np
-import fastcluster
-import scipy.cluster.hierarchy
-import scipy.cluster.hierarchy as sch 
-import string
-from pprint import pprint
-from configobj import ConfigObj
-import traceback
-#from tsne import tsne
-import re, os, ast
-import logging
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn import datasets, linear_model, cross_validation
+import re, os
+from sklearn.linear_model import LogisticRegression
+from sklearn import   cross_validation
 from sklearn.metrics import classification_report, matthews_corrcoef, roc_auc_score
 from sklearn.metrics import precision_recall_fscore_support as score
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from word2vec_utils import DocumentFeatures
 from text_extract_doc_flist import Sentences
-import numpy as Math
-import pylab as Plot
 import operator
 import time
 from cleanData import cleanse_data
@@ -47,7 +29,7 @@ class TrainData():
 
 ## Load Gensim framework
 	def load_w2vmodel(self,model):
-		return gensim.models.Word2Vec.load(model)
+		return Word2Vec.load(model)
 
 
 ## get tfidf model trained from given directory 'dirname' 
@@ -146,7 +128,7 @@ class PredictData():
 
 ## Load Gensim framework
 	def load_w2vmodel(self,model):
-		return gensim.models.Word2Vec.load(model)
+		return Word2Vec.load(model)
 
 
 ## get tfidf model trained from given directory 'dirname' 
@@ -272,12 +254,10 @@ class genTopNVec:
 		self.result = self.getAnalysis(self.Y_test,self.Y_pred)
 		self.printResult()
 
-
-
 	def genLRModel(self):
 		td = TrainData()
 
-# For extracting data for train set
+		# For extracting data for train set
 		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.topN,self.size)
 		print "###################### LR Training ###########################"
 		logit = LogisticRegression(C=1.0)
@@ -343,15 +323,14 @@ class genTopNVec:
 		self.savePredictResult2File(self.fn_test,self.Y_pred,fp)	
 	
 	def train_predict_iter(self):
-		td = TrainData()
 
+		td = TrainData()
 		
 		self.x_wt, self.Ylabels,self.fn_train  = td.train_model( self.train_dirname, self.w2v_model_path,self.topN,self.size)
 
-# For extracting data for predict set
+		# For extracting data for predict set
 		pd = PredictData()
 		self.xPred_wt,self.fn_test = pd.predict_model(self.predict_dirname, self.w2v_model_path,self.topN,self.size)
-
 
 		print "###################### LR Training ###########################"
 		logit = LogisticRegression(C=1.0).fit(self.x_wt, self.Ylabels)
@@ -420,8 +399,8 @@ class genTopNVec:
 		x_total, y_total, fn_total  = td.train_model( total_dirname, self.w2v_model_path,self.topN,self.size)
 
 		kf_total = cross_validation.ShuffleSplit(len(x_total), n_iter=iter_N, test_size=split,   random_state=random_state)
-		x_tot_np = Math.array(x_total)
-		y_tot_np = Math.array(y_total)
+		x_tot_np = np.array(x_total)
+		y_tot_np = np.array(y_total)
 		
 		j =0
 		fn_test = []
@@ -451,8 +430,8 @@ class genTopNVec:
 if __name__ == '__main__': 
 
 
-	train_dirname = '/home/viswanath/workspace/test_resume/train'
-	test_dirname = '/home/viswanath/workspace/test_resume/train'
+	train_dirname = '/home/viswanath/workspace/code_garage/conver2txt/in_data/train'
+	test_dirname = '/home/viswanath/workspace/code_garage/conver2txt/in_data/test'
 	predict_dirname = '/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict'
 	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_100v3.mod' 
 	total_dirname = '/home/viswanath/workspace/test_resume/train'
@@ -466,8 +445,9 @@ if __name__ == '__main__':
 		print "\nFor TopN N=" + str(topN) + "\n"
 		gt = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
 	#	gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
- 	#	gt2 = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
+ 		gt2 = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
 		gt.start()
+		gt2.start()
 	#	gt2.genLRModel()
 	#	gt2.cachedTestModel()
 
