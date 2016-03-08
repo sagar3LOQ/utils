@@ -42,6 +42,9 @@ def cleanData(text):
 	text = re.sub(r"\.[\s\t\n]+",'\n',text)	
 	return text
 
+## Class for converting CV's doc and  stored into text files 
+
+
 class CVParser(object):
     # Some commonly used regex patterns:
 
@@ -104,7 +107,8 @@ class CVParser(object):
             return self._convert_rtf_to_text(index)
         elif self.cvFormat == 'html':    
             return self._convert_htm_to_text()
-        elif self.cvFormat == 'htm':    
+        elif self.cvFormat == 'htm':   
+            print "html conversion"
             return self._convert_htm_to_text()
         elif self.cvFormat == 'txt':
             return self._text_process()
@@ -113,19 +117,26 @@ class CVParser(object):
         return(0)
 
     def _text_process(self):
+
         return open(self.cvFile).read()
 
+
+### convert html to text
     def _convert_htm_to_text(self):
 
         htmlText =  open(self.cvFile).read()
+        print htmlText
+        s = html2text.html2text(htmlText.decode('utf-8'))
+        print "html text"
+        print s
+        return s
 
-        return html2text.html2text(htmlText.decode('utf-8'))
 
-
+###convert PDFs to text
     def _convert_pdf_to_text(self,index):
       #  print "processing pdfs"
-        input_pdf = self.cvFile
 
+        input_pdf = self.cvFile
 
         inputPath = os.getcwd()
         if os.path.exists(input_pdf):
@@ -138,6 +149,8 @@ class CVParser(object):
  
         return text
 
+
+### convert RTFs to text
     def _convert_rtf_to_text(self,index):
 
         input_pdf = self.cvFile
@@ -151,7 +164,9 @@ class CVParser(object):
 
         text = textract.process(input_pdf)
         return text
-    
+  
+
+ ####  convert DOCs to text   
     def _convert_doc_to_text(self,index, password=None):
 
         input_doc = self.cvFile
@@ -175,7 +190,7 @@ class CVParser(object):
         return text
 
 
-
+#### convert DOCX files to text
 
     def _convert_docx_to_text(self,index, password=None):
 
@@ -191,6 +206,7 @@ class CVParser(object):
 
         return text.encode('utf-8')
 
+#### A class defined for uncompressing the compressed files
 
 class decompressFiles:
 
@@ -253,6 +269,7 @@ class decompressFiles:
         fw.write(data)
         fw.close()
 
+#### function to uncompress the compressed files
        
     def genSingleFile(self, singleDataFile):
         outDir = self.deCompressDir
@@ -262,6 +279,8 @@ class decompressFiles:
         self.decompressFile()
         self.ParseDecompressDir(singleDir,singleDataFile)
 
+
+#### function that returns an ITERATOR that convert a file iteratively
 
 def convertFiles2TextIter(in_dir,label):
     index = 0
@@ -295,7 +314,7 @@ def convertFiles2TextIter(in_dir,label):
 
             yield data 
 
-
+#### function that convert all files in in_dir and stored all files in out_dir
 
 def convertFiles(in_dir,label,out_dir):
     index = 0
@@ -318,9 +337,9 @@ def convertFiles(in_dir,label,out_dir):
                 sys.exit(0)
             try:
                 text = cvparser.preprocess(index)
-        
+              #  print text
                 md5_str = getMD5HashDigest(text)
-        
+                #print md5_str
                 outFname = getOutName(md5_str,label)
     
                 outPath = out_dir + "/" + outFname
@@ -335,22 +354,24 @@ def convertFiles(in_dir,label,out_dir):
                 sys.exit(1)
 
 
-
+### generate label from filename
 def genLabel(strg):
     return strg.split("/")[-1]
     
+### wrapper for convert files in input_directory and stores in output_directory
 
 def convertDirFiles(dirIn,dirOut):
     label = genLabel(dirIn)
     print label
     convertFiles(dirIn,label,dirOut)
 
-    
+#### generate meta string  from MD5 checksum and label   
 
 def getMetaString(md5Str,label):
     strg = str(md5Str) + "_" + label
     return strg
 
+##### wrapper for convert files in input_directory one by one
 
 def convertFiles2TextIterWrap(dirIn):
     label = genLabel(dirIn)
@@ -362,17 +383,22 @@ def convertFiles2TextIterWrap(dirIn):
 
 if __name__ == '__main__':
 
-    cvfile = "/home/viswanath/Documents/Blog_ Encoding and Python_ The UnicodeDecodeError exception.html" 
+    # cvfile = "/home/viswanath/Documents/Blog_ Encoding and Python_ The UnicodeDecodeError exception.html" 
              
-    cvparser = CVParser(cvfile,'','')
-    if cvparser.errorMsg:
-        print cvparser.errorMsg
-        sys.exit(0)
+    # cvparser = CVParser(cvfile,'','')
+    # if cvparser.errorMsg:
+    #     print cvparser.errorMsg
+    #     sys.exit(0)
            
-    text = cvparser.preprocess(0)
+    # text = cvparser.preprocess(0)
         
-    text = cleanse_data(text)
-    print text
+    # text = cleanse_data(text)
+    # print text
+
+    predict_dir = "/home/viswanath/Downloads/predict17feb"
+    predict_out = "/home/viswanath/workspace/code_garage/conver2txt/in_data/predict"
+    convertDirFiles(predict_dir,predict_out)
+
 
 #    obj = decompressFiles('/home/viswanath/Downloads/compressFIle/3LOQ Profiles.tar','/home/viswanath/Downloads/compressFIle/output')
  #   obj.genSingleFile('resultant.txt')

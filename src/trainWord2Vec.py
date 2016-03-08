@@ -7,11 +7,15 @@ from configobj import ConfigObj
 
 #logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', format=logging.INFO)
 
+
+
+#print top N similar words
 def print_similars(model, item_list, N):
 	print 'Top ' + str(N) + ' Items similar to:' + item_list
 	for each in model.most_similar(item_list, [], N):
 		print each
 
+# test function
 def test(model):
 
 	positive = ['java']
@@ -20,6 +24,14 @@ def test(model):
 	print "########## POSITIVE = {0} ##### NEGATIVE = {1}".format(positive, negative)
 	print model.most_similar_cosmul(positive,negative)
 
+# function used for training word2vec from files in input_data_dir and write word2vec model in out_model_file using parameter 
+# size : size of vector
+# window: subset of word used for training data
+# negative: neagtive sample to be used for training
+# sample: sampling parameter
+# min_count: minimum number of occurences in the set
+# workers: No. of threads to be used
+# iterations: No. of iterations to be done for training
 def train(model_name, is_phrased, input_data_dir, size, window, negative, sample, min_count, workers, iterations, out_model_file):
 
 	
@@ -59,6 +71,8 @@ def genWord2Vec(model_name, is_phrased, input_data_dir, size, window, negative, 
 	
 	return model
 
+
+### print vocab for the word2vec
 def print_vocab(model):
 	for each in model.vocab:
 		print each

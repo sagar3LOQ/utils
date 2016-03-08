@@ -32,15 +32,18 @@ res_dir = '/home/viswanath/workspace/code_garage/conver2txt/out'
 logs_dir = '/home/viswanath/workspace/code_garage/conver2txt/logs'
 
 
+### class for training data model 
 
 class TrainData():
 
 	def __init__(self):
 		pass
 
+    # load word2vec model
 	def load_w2vmodel(self,model):
 		return gensim.models.Word2Vec.load(model)
 
+    # generate TF-IDF model from dirname files
 	def get_tfidf_model(self, dirname):
 		
 		data = Sentences(dirname)
@@ -48,6 +51,7 @@ class TrainData():
 		tfidf_matrix_train = tfidf_vectorizer.fit_transform(data)
 		return tfidf_vectorizer
 	
+	# generate document vectors 
 	def train_model(self, dirname, w2v_model_path,ndim):
 		
 		tfidf_model = self.get_tfidf_model(dirname)
@@ -74,6 +78,7 @@ class TrainData():
 		return wt_vect_data, label_data, fn
 
 
+### class for extracting data on predict data 
 
 class PredictData():
 
@@ -110,7 +115,9 @@ class PredictData():
 			wt_vect_data.append(sent_vect[0])
 
 		return wt_vect_data, fn
-		
+
+
+#### generate SRL structure and calculate vector based on Circulation convolution of SRL structre based on paper mentioned  		
 		
 class genSRLVec():
 
@@ -240,7 +247,7 @@ class genSRLVec():
 
 
 
-
+	# calling N-Fold test , inter_N is for number of Test, split defines divide split % in test and (100- split)% in train data
 	def NFoldTest(self,total_dirname, iter_N=5,split =0.30,random_state=0):
 	
 		td = TrainData()

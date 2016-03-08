@@ -26,6 +26,8 @@ def cconv(a, b):
     '''
     return np.fft.ifft(np.fft.fft(a) * np.fft.fft(b)).real
 
+
+## calculate feature doc vector for each document 
 class FeatureUtils():
 
     def __init__(self):
@@ -52,7 +54,7 @@ class FeatureUtils():
         except:
             raise
 
-
+### Method that calculate doc vector applying circular convolution based on Word2vec and TF-IDF model
     def get_tfidf_srl_circonv_weighted_vec(self, words, w2v_model, tfidf_model, ndim,VA0,VA1):
         try:
             nvecs = 0 
@@ -192,8 +194,8 @@ class DocumentFeatures():
         except:
             raise
 
-
-    def get_sent_circconv_vec(self, sent, w2v_model, ndim, wtmethod='avg', tfidf_model=None,VA0={},VA1={}):
+##### generate document vector for the given document 
+    def get_sent_circconv_vec(self, sent, w2v_model, ndim, wtmethod='tfidf', tfidf_model=None,VA0={},VA1={}):
         try:
             x = sent.split()
             if wtmethod == 'tfidf':

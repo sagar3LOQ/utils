@@ -1,4 +1,3 @@
-
 import sys
 from gensim.models import Word2Vec
 import random
@@ -18,7 +17,6 @@ import pickle
 res_dir = ''
 logs_dir = ''
 
-
 ## Training data class
 
 class TrainData():
@@ -26,11 +24,9 @@ class TrainData():
 	def __init__(self):
 		pass
 
-
 ## Load Gensim framework
 	def load_w2vmodel(self,model):
 		return Word2Vec.load(model)
-
 
 ## get tfidf model trained from given directory 'dirname' 
 	def get_tfidf_model(self, dirname):
@@ -42,7 +38,6 @@ class TrainData():
 		fn = tfidf_vectorizer.get_feature_names()
 
 		return tfidf_vectorizer
-
 
 #train model based on top N wwords from TFIDF model	
 	def train_model(self, dirname, w2v_model_path,topN,ndim):
@@ -430,10 +425,10 @@ class genTopNVec:
 if __name__ == '__main__': 
 
 
-	train_dirname = '/home/viswanath/workspace/code_garage/conver2txt/in_data/train'
+	train_dirname = '/home/viswanath/workspace/test_resume/train'
 	test_dirname = '/home/viswanath/workspace/code_garage/conver2txt/in_data/test'
-	predict_dirname = '/home/viswanath/workspace/code_garage/conver2txt/raw_text/predict'
-	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_100v3.mod' 
+	predict_dirname = '/home/viswanath/workspace/code_garage/conver2txt/in_data/predict'
+	w2v_model_path = '/home/viswanath/workspace/code_garage/conver2txt/model/w2v_model_size100_window10_negative20_sample0.1_minCount3_iter50.mod' 
 	total_dirname = '/home/viswanath/workspace/test_resume/train'
 	size = 100
 	topNA = [200]  
@@ -444,10 +439,11 @@ if __name__ == '__main__':
 	for topN in topNA:
 		print "\nFor TopN N=" + str(topN) + "\n"
 		gt = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
+		gt.train_predict()
 	#	gt.NFoldTest(total_dirname,iter_N=50,split =0.27)
- 		gt2 = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
-		gt.start()
-		gt2.start()
+ 	#	gt2 = genTopNVec(train_dirname,test_dirname,predict_dirname,w2v_model_path,size,topN)
+	#	gt.start()
+	#	gt2.start()
 	#	gt2.genLRModel()
 	#	gt2.cachedTestModel()
 
