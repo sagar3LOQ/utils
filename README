@@ -56,12 +56,15 @@ src:
 |-- cleanData.py
 |-- convert2text_IterText.py
 |-- convert2text.py
+|-- convertDocLib.py
 |-- databaseFile.py
 |-- extSent.py
 |-- model_srl.py
 |-- model_srl_utils.py
 |-- model_topN.py
 |-- model_topn_test.py
+|-- senna_py.py
+|-- sentenceUtil.py
 |-- setupSys.py
 |-- testCassendra.py
 |-- testMongo.py
@@ -125,3 +128,16 @@ xvii)  trainWord2Vec.py
 
 xviii) word2vec_utils.py
     utility function for returning an iterator that will fetch each file after cleaning text 
+
+xix) convertDocLib.py
+    A library file that convert raw document files into text files and this function returns it in iterative manner or convert all files to output directory
+
+xx) senna_py.py
+    A library that works as a wrapper to SENNA's SRL(Semantic Role Labelling) and generates SRL structure to be used in SRL based models
+
+xxi) sentenceUtil.py
+    Utility function for extracting sentence from a given text document
+
+
+
+
